@@ -34,6 +34,7 @@ public class Journal
     public void WriteEntry()
     {
         // Simplified prompt list for demonstration
+
         List<string> prompts = new List<string>
         {
             "Who was the most interesting person I interacted with today?",
@@ -45,6 +46,8 @@ public class Journal
 
         Random random = new Random();
         string randomPrompt = prompts[random.Next(prompts.Count)];
+
+        // The DailyPromptJournalEntry class has a method named Display() that is responsible for displaying the journal entry. I made this method more informative by showing the date, prompt, and response in a formatted manner. This makes the journal entries more readable and user-friendly.
 
         DailyPromptJournalEntry entry = new DailyPromptJournalEntry
         {
@@ -66,6 +69,8 @@ public class Journal
             entry.Display();
         }
     }
+
+    // In the SaveToFile and LoadFromFile methods of the Journal class, I used a comma-separated values (CSV) format to store and retrieve data from the file. Each line in the file represents a journal entry with the date, prompt, and response separated by commas. This format is more human-readable and allows users to open the file in spreadsheet software like Excel.
 
     public void SaveToFile(string filename)
     {
@@ -108,6 +113,8 @@ class Program
     static void Main()
     {
         Journal journal = new Journal();
+
+        // The user interface in the Main method now includes a user-friendly menu with numbered options. This makes it easier for users to interact with the program and choose the desired functionality. The program also informs the user when they make an invalid choice.
 
         while (true)
         {
