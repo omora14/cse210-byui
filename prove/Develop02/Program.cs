@@ -1,157 +1,160 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-
-public abstract class JournalEntry
-{
-    public DateTime Date { get; set; }
-    public string Prompt { get; set; }
-    public string Response { get; set; }
-
-    public abstract void Display();
-}
-
-public class DailyPromptJournalEntry : JournalEntry
-{
-    public override void Display()
-    {
-        Console.WriteLine($"Date: {Date.ToShortDateString()}");
-        Console.WriteLine($"Prompt: {Prompt}");
-        Console.WriteLine($"Response: {Response}");
-        Console.WriteLine();
-    }
-}
-
-public class Journal
-{
-    private List<JournalEntry> entries;
-
-    public Journal()
-    {
-        entries = new List<JournalEntry>();
-    }
-
-    public void WriteEntry()
-    {
-        // Simplified prompt list for demonstration
-
-        List<string> prompts = new List<string>
-        {
-            "Who was the most interesting person I interacted with today?",
-            "What was the best part of my day?",
-            "How did I see the hand of the Lord in my life today?",
-            "What was the strongest emotion I felt today?",
-            "If I had one thing I could do over today, what would it be?"
-        };
-
-        Random random = new Random();
-        string randomPrompt = prompts[random.Next(prompts.Count)];
-
-        // The DailyPromptJournalEntry class has a method named Display() that is responsible for displaying the journal entry. I made this method more informative by showing the date, prompt, and response in a formatted manner. This makes the journal entries more readable and user-friendly.
-
-        DailyPromptJournalEntry entry = new DailyPromptJournalEntry
-        {
-            Date = DateTime.Now,
-            Prompt = randomPrompt
-        };
-
-        Console.WriteLine($"Prompt: {randomPrompt}");
-        Console.Write("Response: ");
-        entry.Response = Console.ReadLine();
-
-        entries.Add(entry);
-    }
-
-    public void DisplayJournal()
-    {
-        foreach (var entry in entries)
-        {
-            entry.Display();
-        }
-    }
-
-    // In the SaveToFile and LoadFromFile methods of the Journal class, I used a comma-separated values (CSV) format to store and retrieve data from the file. Each line in the file represents a journal entry with the date, prompt, and response separated by commas. This format is more human-readable and allows users to open the file in spreadsheet software like Excel.
-
-    public void SaveToFile(string filename)
-    {
-        using (StreamWriter outputFile = new StreamWriter(filename))
-        {
-            foreach (var entry in entries)
-            {
-                outputFile.WriteLine($"{entry.Date.ToShortDateString()},{entry.Prompt},{entry.Response}");
-            }
-        }
-    }
-
-    public void LoadFromFile(string filename)
-    {
-        entries.Clear();
-
-        if (File.Exists(filename))
-        {
-            string[] lines = File.ReadAllLines(filename);
-
-            foreach (var line in lines)
-            {
-                string[] parts = line.Split(',');
-
-                DailyPromptJournalEntry entry = new DailyPromptJournalEntry
-                {
-                    Date = DateTime.Parse(parts[0]),
-                    Prompt = parts[1],
-                    Response = parts[2]
-                };
-
-                entries.Add(entry);
-            }
-        }
-    }
-}
 
 class Program
 {
-    static void Main()
+    static void Main(string[] args)
     {
-        Journal journal = new Journal();
 
-        // The user interface in the Main method now includes a user-friendly menu with numbered options. This makes it easier for users to interact with the program and choose the desired functionality. The program also informs the user when they make an invalid choice.
-
-        while (true)
+        string starter = "-1";
+        Journal onProcess = new Journal();
+        while (starter != "6")
         {
-            Console.WriteLine("1. Write a new entry");
-            Console.WriteLine("2. Display the journal");
-            Console.WriteLine("3. Save the journal to a file");
-            Console.WriteLine("4. Load the journal from a file");
-            Console.WriteLine("5. Exit");
+            Entry infoEntered = new Entry();
+            Prompts thePrompt = new Prompts();
 
-            Console.Write("Enter your choice: ");
-            int choice = int.Parse(Console.ReadLine());
 
-            switch (choice)
+            Console.Write("\nPlease select one of the following choices:\n1.Write\n2.Display\n3.Load\n4.Save\n5.Delete Entry\n6.Quit\nWhat would you like to do? ");
+            string selection = Console.ReadLine();
+            if (selection == "1")
             {
-                case 1:
-                    journal.WriteEntry();
-                    break;
-                case 2:
-                    journal.DisplayJournal();
-                    break;
-                case 3:
-                    Console.Write("Enter the filename to save: ");
-                    string saveFilename = Console.ReadLine();
-                    journal.SaveToFile(saveFilename);
-                    break;
-                case 4:
-                    Console.Write("Enter the filename to load: ");
-                    string loadFilename = Console.ReadLine();
-                    journal.LoadFromFile(loadFilename);
-                    break;
-                case 5:
-                    Environment.Exit(0);
-                    break;
-                default:
-                    Console.WriteLine("Invalid choice. Please try again.");
-                    break;
+
+                string theQuestion = thePrompt.blindQuestion();
+                Console.Write($"\n{theQuestion}\n> ");
+
+                infoEntered._answer = Console.ReadLine();
+                infoEntered._prompt = theQuestion;
+
+                DateTime theCurrentTime = DateTime.Now;
+                infoEntered._todayDate = theCurrentTime.ToShortDateString();
+
+                //We stopped sending strings and we pass all the "infoEntered objects"
+
+                onProcess.addingEntries(infoEntered);
+
+            }
+
+            else if (selection == "2")
+            {
+                Console.WriteLine();
+                onProcess.displayingJournal();
+                Console.WriteLine();
+
+            }
+            else if (selection == "3")
+            {
+                string trying = "yes";
+                while (trying != "no")
+                {
+
+                    string folderPath = @"Savedata\";
+                    Console.Write("\nWhat file would you like to load? ");
+                    string loadedFile = Console.ReadLine();
+
+                    string folderFile = Path.Combine(folderPath, loadedFile);
+
+
+
+                    if (File.Exists(folderFile))
+                    {
+
+                        onProcess._filename = folderFile;
+
+                        Console.WriteLine($"\n\nLOADING {loadedFile}.... 0%\nLOADING {loadedFile}.... 25%\nLOADING {loadedFile}.... 50%");
+                        Console.WriteLine($"\nLOADING {loadedFile}.... 75%\nLOADING {loadedFile}.... 99%\n{loadedFile} loaded successfully!");
+
+                        onProcess.loading();
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nWhoops! It looks like the file was not found!\nMaybe we could try another one? ");
+                        int looping = -1;
+                        while (looping != 1)
+                        {
+
+
+                            Console.Write("\nWould you like to try again? ");
+                            string again = Console.ReadLine();
+                            if (again == "yes")
+                            {
+                                trying = "yes";
+                                break;
+                            }
+                            else if (again == "no")
+                            {
+                                trying = "no";
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("\nNot a valid input!");
+                                looping = -1;
+                            }
+
+                        }
+                    }
+
+                }
+
+            }
+            else if (selection == "4")
+            {
+                string folderPath = @"Savedata\";
+                Console.Write("\nWhere are you going to save the sacred words today? ");
+                string file = Console.ReadLine();
+                string theWholePath = Path.Combine(folderPath, file);
+
+                Console.WriteLine($"\n\nSAVING {file}.... 0%\nSAVING {file}.... 25%\nSAVING {file}.... 50%");
+                Console.WriteLine($"\nSAVING {file}.... 75%\nSAVING {file}.... 99%\n{file} saved successfully!");
+
+                onProcess._filename = theWholePath;
+                onProcess.saving();
+            }
+            else if (selection == "5")
+            {
+                Console.WriteLine("\n");
+                onProcess.displayingJournal();
+                Console.Write("\nPlease enter the number of the entry that you desired to delete: ");
+                string killingNumber = Console.ReadLine();
+
+                string entriesDestructor = "5";
+                while (entriesDestructor == "5")
+                {
+                    Console.Write($"\nAre you sure you want to delete entry number {killingNumber}? It will be gone forever!(yes/no) ");
+                    string finalDesicion = Console.ReadLine();
+
+                    if (finalDesicion == "yes")
+                    {
+
+                        onProcess._deletingNumber = killingNumber;
+                        onProcess.deleting();
+                        Console.WriteLine("\nHere is how your Journal looks like!\n");
+                        onProcess.displayingJournal();
+                        onProcess.saving();
+                        break;
+                    }
+                    else if (finalDesicion == "no")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nPlease try a valid a input");
+                        entriesDestructor = "5";
+                    }
+                }
+            }
+            else if (selection == "6")
+            {
+                Console.WriteLine("Good bye!");
+                break;
+            }
+            else
+            {
+                Console.WriteLine("\nWhoops! I think you need to select\none of the numbers seen in the menu my friend!\n");
             }
         }
+
     }
 }
