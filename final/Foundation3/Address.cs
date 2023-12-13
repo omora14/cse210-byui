@@ -14,7 +14,7 @@ public class Address
         _country = country;
         _zipCode = zipCode;
     }
-    public string fulAddress()
+    public string fullAddress()
     {
         return $"{_street}, {_city}, {_state}, {_country}, {_zipCode}";
     }

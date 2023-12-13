@@ -1,13 +1,13 @@
 public class Event
 {
-    private string _title;
+    protected string _title;
 
     private string _descrip;
-    private DateTime _date;
-    private DateTime _time;
+    protected string _date;
+    private string _time;
     private Address _address;
 
-    public Event(string title, string descrip, DateTime date, DateTime time, Address address)
+    public Event(string title, string descrip, string date, string time, Address address)
     {
         _title = title;
         _descrip = descrip;
@@ -16,12 +16,21 @@ public class Event
         _address = address;
     }
 
-
-    public virtual string TDDTA()
+    //TDDTA = Title, description, Date, Time, Address 
+    public string TDDTA()//standard
     {
-        return $"Title: {_title}\nDescription: {_descrip}\nDate: {_date}\nTime: {_time}\nAddress: {_address}";
+        return $"Title: {_title}\nDescription: {_descrip}\nDate: {_date}\nTime: {_time}\nAddress: " + _address.fullAddress();
+    }
+
+    public virtual string detailedInfo()
+    {
+        return TDDTA();
     }
 
 
+    public virtual string shortDescription()
+    {
+        return $"Title: {_title}\nDate: {_date}";
+    }
 
 }
